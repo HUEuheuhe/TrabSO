@@ -6,11 +6,11 @@ public class PaginaMemoria {
     private Integer contAcesso;
     private PaginaMemoria proximo;
 
-    private Object conteudo;
-
     public PaginaMemoria() {
+        contAcesso = 0;
+        proximo = null;
     }
-    
+
     public Integer getId() {
         return id;
     }
@@ -33,14 +33,6 @@ public class PaginaMemoria {
 
     public void setProximo(PaginaMemoria proximo) {
         this.proximo = proximo;
-    }
-
-    public Object getConteudo() {
-        return conteudo;
-    }
-
-    public void setConteudo(Object conteudo) {
-        this.conteudo = conteudo;
     }
 
 }
