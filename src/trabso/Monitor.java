@@ -12,7 +12,7 @@ public class Monitor {
     private Integer idCount = 0, tempoExecucao = 0;
     private PaginaMemoria pivot = null;
     private List<PaginaMemoria> memoriaVirtual = null;
-    private Scanner sc = new Scanner(System.in);
+    private final Scanner sc = new Scanner(System.in);
 
     public void funcionar() {
         memoriaVirtual = new ArrayList<PaginaMemoria>();
@@ -44,7 +44,7 @@ public class Monitor {
                     break;
                 }
                 case 5: {
-
+                    monitorarPaginasMemoria();
                     break;
                 }
                 case 0: {
@@ -93,18 +93,20 @@ public class Monitor {
         Integer choice = 0;
         do {
             System.out.println();
+            System.out.println("Tempo de Execução: " + tempoExecucao);
+            System.out.println();
             System.out.println("Selecione uma opção abaixo!");
             System.out.println("1) Adicionar Página de memória");
             System.out.println("2) Remover Página de memória");
             System.out.println("3) Visualizar todas as Páginas de memória");
-            System.out.println("5) Acessar Página de memória");
-            System.out.println("4) Monitorar as Páginas de memória");
+            System.out.println("4) Acessar Página de memória");
+            System.out.println("5) Monitorar as Páginas de memória");
             try {
                 choice = sc.nextInt();
             } catch (InputMismatchException e) {
                 System.out.println("Formato inválido");
             }
-            if (0 <= choice && choice < 5) {
+            if (0 <= choice && choice <= 5) {
                 break;
             }
             System.out.flush();
@@ -132,7 +134,7 @@ public class Monitor {
 
     private PaginaMemoria removerPaginaMemoria(PaginaMemoria excluida) {
         if (pivot == null) {
-            System.out.println("Lista vazia!");
+            System.out.println("Memória vazia!");
             return null;
         } else {
             return removerRecursivo(pivot, excluida);
@@ -172,7 +174,7 @@ public class Monitor {
 
     private void executarVisualizacaoPaginas() {
         if (pivot == null) {
-            System.out.println("Lista vazia!");
+            System.out.println("Memória vazia!");
         } else {
             System.out.print(pivot);
             imprimirRecursivo(pivot.getProximo());
@@ -187,16 +189,40 @@ public class Monitor {
     }
 
     private void acessarPaginaMemoria(PaginaMemoria entrada) {
-        PaginaMemoria temp = pivot;
+        PaginaMemoria temp = pivot.getProximo();
         do {
             if (temp.equals(entrada)) {
                 temp.setContAcesso(temp.getContAcesso() + 1);
                 System.out.println("Página acessada!");
                 break;
+            } else if (temp.equals(pivot)) {
+                System.out.println("Página não encontrada!");
+                break;
             } else {
                 temp = temp.getProximo();
             }
         } while (true);
+    }
+
+    private void monitorarPaginasMemoria() {
+        PaginaMemoria monitorado = null;
+        if (pivot == null) {
+            System.out.println("Memória vazia!");
+        } else {
+            monitorado = pivot;
+            monitorado = monitorarRecursivo(pivot.getProximo(), monitorado);
+            System.out.println("Página eleita a partir do índice de remoção: " + monitorado);
+        }
+    }
+
+    private PaginaMemoria monitorarRecursivo(PaginaMemoria proximo, PaginaMemoria monitorado) {
+        if (!proximo.equals(pivot)) {
+            if (monitorado.getIndiceRemocao(tempoExecucao) < proximo.getIndiceRemocao(tempoExecucao)) {
+                monitorado = proximo;
+            }
+            return monitorarRecursivo(proximo.getProximo(), monitorado);
+        }
+        return monitorado;
     }
 
 }

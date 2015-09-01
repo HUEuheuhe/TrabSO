@@ -37,6 +37,14 @@ public class PaginaMemoria {
         this.proximo = proximo;
     }
 
+    public double getIndiceRemocao(Integer tempo) {
+        if (contAcesso == 0) {
+            return tempo;
+        } else {
+            return tempo / contAcesso;
+        }
+    }
+
     @Override
     public String toString() {
         return "[ Pagina (id=" + id + ") ]  ";
