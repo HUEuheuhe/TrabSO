@@ -1,5 +1,6 @@
 package trabso;
 
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -8,18 +9,19 @@ import java.util.logging.Logger;
 
 public class Monitor {
 
-    private Integer idCount = 0;
+    private Integer idCount = 0, tempoExecucao = 0;
     private PaginaMemoria pivot = null;
     private List<PaginaMemoria> memoriaVirtual = null;
     private Scanner sc = new Scanner(System.in);
 
     public void funcionar() {
+        memoriaVirtual = new ArrayList<PaginaMemoria>();
         Integer choice;
         do {
+            tempoExecucao++;
             choice = construirMenu();
             executarOperacaoEscolhida(choice);
         } while (choice != 0);
-
     }
 
     private void executarOperacaoEscolhida(Integer choice) {
@@ -62,10 +64,15 @@ public class Monitor {
 
     private void executarExclusaoPagina() {
         PaginaMemoria entrada = new PaginaMemoria();
+        PaginaMemoria paginaRemovida;
         System.out.println("Digite o Id da página a ser removida:");
         Integer id = sc.nextInt();
         entrada.setId(id);
-        this.removerPaginaMemoria(entrada);
+        paginaRemovida = this.removerPaginaMemoria(entrada);
+        if (paginaRemovida != null) {
+            memoriaVirtual.add(paginaRemovida);
+            System.out.println(paginaRemovida);
+        }
     }
 
     private void executarAcessoPagina() {
@@ -123,20 +130,23 @@ public class Monitor {
         }
     }
 
-    private void removerPaginaMemoria(PaginaMemoria excluida) {
+    private PaginaMemoria removerPaginaMemoria(PaginaMemoria excluida) {
         if (pivot == null) {
             System.out.println("Lista vazia!");
+            return null;
         } else {
-            removerRecursivo(pivot, excluida);
+            return removerRecursivo(pivot, excluida);
         }
     }
 
-    private void removerRecursivo(PaginaMemoria anterior, PaginaMemoria excluida) {
+    private PaginaMemoria removerRecursivo(PaginaMemoria anterior, PaginaMemoria excluida) {
+        PaginaMemoria paginaremovida = null;
         if (excluida.equals(anterior) && !anterior.getProximo().equals(pivot)) {
             PaginaMemoria temp = pivot;
             do {
                 if (anterior.getProximo().equals(pivot)) {
                     anterior.setProximo(pivot.getProximo());
+                    paginaremovida = pivot;
                     pivot = pivot.getProximo();
                     System.out.println("Página removida!");
                     break;
@@ -145,16 +155,19 @@ public class Monitor {
                 }
             } while (true);
         } else if (excluida.equals(anterior) && anterior.equals(pivot)) {
+            paginaremovida = pivot;
             pivot = null;
             System.out.println("Página removida!");
         } else if (excluida.equals(anterior.getProximo()) && !anterior.getProximo().equals(pivot)) {
+            paginaremovida = anterior.getProximo();
             anterior.setProximo(anterior.getProximo().getProximo());
             System.out.println("Página removida!");
         } else if (!excluida.equals(anterior.getProximo()) && !anterior.getProximo().equals(pivot)) {
-            removerRecursivo(anterior.getProximo(), excluida);
+            paginaremovida = removerRecursivo(anterior.getProximo(), excluida);
         } else {
             System.out.println("Id não Encontrado!");
         }
+        return paginaremovida;
     }
 
     private void executarVisualizacaoPaginas() {
